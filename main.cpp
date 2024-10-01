@@ -75,7 +75,7 @@ void Spider::addFeedingToRecord(const string& date, const string& prey){
 }
 
 int main(){
-    vector<Spider> spiderCollection;
+    vector<Spider*> spiderCollection;
     cout << "=====Welcome to The Dynamic Spider Managment Company!=====" << endl;
     char choice;
     do{
@@ -104,10 +104,11 @@ int main(){
             cout << "\nEnter the age of the spider: ";
             cin >> age;
             Spider newSpider(name, speices, sex, coloration, size, age);
-            spiderCollection.push_back(newSpider);
+            Spider* newSpiderPtr = new Spider(name, speices, sex, coloration, size, age);
+            spiderCollection.push_back(newSpiderPtr);
         }else if(choice == 'P' || choice == 'p'){
             for(int i = 0; i < spiderCollection.size(); i++){
-                spiderCollection[i].displaySpiderInfo();
+                spiderCollection[i]->displaySpiderInfo();
                 cout << endl;
             }
         }else if(choice == 'F' || choice == 'f'){
@@ -119,13 +120,13 @@ int main(){
                 cout << "Enter the name of the spider: ";
                 cin >> name;
                 for(int i = 0; i < spiderCollection.size(); i++){
-                    if(spiderCollection[i].getName() == name){
+                    if(spiderCollection[i]->getName() == name){
                         found = true;
                         cout << "Enter the food: ";
                         cin >> food;
                         cout << "Enter the date: ";
                         cin >> date;
-                        spiderCollection[i].addFeedingToRecord(date, food);
+                        spiderCollection[i]->addFeedingToRecord(date, food);
                     }
                 }
                 if(!found){
@@ -136,6 +137,8 @@ int main(){
 
     }while(choice != 'x');
 
-
+    for (auto spider : spiderCollection){
+        delete spider;
+    }
     return 0;
 }
