@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <fstream>
 
 using namespace std;  // Use this to avoid std:: prefix for standard types
 
@@ -45,6 +46,8 @@ public:
     // Additional functionalities
     void addFeedingToRecord(const string& date, const string& prey);
     void displaySpiderInfo() const;
+    void saveToFile(ofstream& file) const;
+    static Spider* loadFromFile(ifstream& inFile);
 };
 
 #endif // SPIDER_H

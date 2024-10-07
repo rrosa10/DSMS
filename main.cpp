@@ -17,25 +17,29 @@ int main(){
         cout << "T - Alter an existing spider" << endl;
         cout << "P - See your collection" << endl;
         cout << "F - Add a feeding record" << endl;
+        cout << "S - Save your collection" << endl;
+        cout << "L - Load your collection" << endl;
         cout << "X - Exit" << endl;
         cin >> choice;
+        cin.ignore();
 
         if(choice == 'A' || choice == 'a'){
             string name, speices, coloration, sex;
             float size;
             int age;
             cout << "\nEnter the name of the spider: ";
-            cin >> name;
+            getline(cin, name);
             cout << "\nEnter the species of the spider: ";
-            cin >> speices;
+            getline(cin, speices);
             cout << "\nEnter the coloration of the spider: ";
-            cin >> coloration;
+            getline(cin, coloration);
             cout << "\nEnter the sex of the spider: ";
-            cin >> sex;
+            getline(cin, sex);
             cout << "\nEnter the size of the spider: ";
             cin >> size;
             cout << "\nEnter the age of the spider: ";
             cin >> age;
+            cin.ignore();
             Spider newSpider(name, speices, sex, coloration, size, age);
             Spider* newSpiderPtr = new Spider(name, speices, sex, coloration, size, age);
             spiderCollection.push_back(newSpiderPtr);
@@ -66,6 +70,57 @@ int main(){
                     cout << "Spider not found!" << endl;
                 }
             }
+        }
+        else if (choice == 'T' || choice == 't'){
+            string name = "";
+            cout << "Enter the name of the spider you want to alter: ";
+            cin >> name;
+            for(int i = 0; i < spiderCollection.size(); i++){
+                if (spiderCollection[i]->getName() == name){
+                    string newName, newSpecies, newColoration, newSex;
+                    float newSize;
+                    int newAge;
+                    cout << "Enter the new name of the spider: ";
+                    cin >> newName;
+                    cout << "Enter the new species of the spider: ";
+                    cin >> newSpecies;
+                    cout << "Enter the new coloration of the spider: ";
+                    cin >> newColoration;
+                    cout << "Enter the new sex of the spider: ";
+                    cin >> newSex;
+                    cout << "Enter the new size of the spider: ";
+                    cin >> newSize;
+                    cout << "Enter the new age of the spider: ";
+                    cin >> newAge;
+                    spiderCollection[i]->setName(newName);
+                    spiderCollection[i]->setSpecies(newSpecies);
+                    spiderCollection[i]->setColoration(newColoration);
+                    spiderCollection[i]->setSex(newSex);
+                    spiderCollection[i]->setSize(newSize);
+                    spiderCollection[i]->setAge(newAge);
+                }
+            }
+        }
+        else if(choice == 'S' || choice == 's'){
+            cout << "Saving your collection..." << endl;
+            ofstream outFile("spiderCollection.txt");
+            for(Spider* spider: spiderCollection){
+                spider->saveToFile(outFile);
+            }
+            outFile.close();
+            cout << "Collection saved!" << endl;
+        }
+        else if(choice == 'L' || choice == 'l'){
+            cout << "Loading your collection..." << endl;
+            ifstream inFile("spiderCollection.txt");
+            while(!inFile.eof()){
+                Spider* spider = Spider::loadFromFile(inFile);
+                if(spider != nullptr){
+                    spiderCollection.push_back(spider);
+                }
+            }
+            inFile.close();
+            cout << "Collection loaded!" << endl;
         }
 
     }while(choice != 'x');

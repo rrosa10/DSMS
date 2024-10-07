@@ -61,3 +61,45 @@ void Spider::addFeedingToRecord(const string& date, const string& prey) {
         cout << "Don't overfeed the spider!" << endl;
     }
 }
+
+// Save spider information to file
+void Spider::saveToFile(ofstream& file) const {
+    file << name << ", " << species << ", " << sex << "," << coloration << ", " << size << ", " << age << "\n";
+}
+
+// Load spider information from file
+Spider* Spider::loadFromFile(ifstream& inFile) {
+    string name, species, sex, coloration,feedingRecordStr;
+    float size;
+    int age;
+
+    if(!getline(inFile, name, ',')){
+        return nullptr;
+    }
+
+    getline(inFile, species, ',');
+    getline(inFile, sex, ',');
+    getline(inFile, coloration, ',');
+    inFile >> size;
+    inFile.ignore(1, ',');
+    inFile >> age;
+    inFile.ignore(1, '\n');
+
+    getline(inFile, feedingRecordStr, '\n');
+
+    Spider* newSpider = new Spider(name, species, sex, coloration, size, age);
+
+    size_t pos = 0;
+    string token;
+    while((pos = feedingRecordStr.find(';')) != string::npos){
+        token = feedingRecordStr.substr(0, pos);
+        size_t colonPos = token.find(':');
+        if(colonPos != string::npos){
+            string date = token.substr(0, colonPos);
+            string prey = token.substr(colonPos + 1);
+            newSpider->addFeedingToRecord(date, prey);
+        }
+        feedingRecordStr.erase(0, pos + 1);
+    }
+    return newSpider;
+}
