@@ -3,12 +3,15 @@
 #include <string>
 #include <map>
 #include "Spider.h"
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
 
 int main(){
     vector<Spider*> spiderCollection;
+    bool loaded = false;
     cout << "=====Welcome to The Dynamic Spider Managment Company!=====" << endl;
     char choice;
     do{
@@ -40,15 +43,18 @@ int main(){
             cout << "\nEnter the age of the spider: ";
             cin >> age;
             cin.ignore();
-            Spider newSpider(name, speices, sex, coloration, size, age);
             Spider* newSpiderPtr = new Spider(name, speices, sex, coloration, size, age);
             spiderCollection.push_back(newSpiderPtr);
-        }else if(choice == 'P' || choice == 'p'){
-            for(int i = 0; i < spiderCollection.size(); i++){
+        }
+        else if(choice == 'P' || choice == 'p'){
+            cout << "\nYour collection: " << endl;
+            for(size_t i = 0; i < spiderCollection.size(); i++){
+                cout << "Spider " << i+1 << endl;
                 spiderCollection[i]->displaySpiderInfo();
                 cout << endl;
             }
-        }else if(choice == 'F' || choice == 'f'){
+        }
+        else if(choice == 'F' || choice == 'f'){
             string name;
             string food;
             string date;
@@ -56,7 +62,7 @@ int main(){
             while(!found){
                 cout << "Enter the name of the spider: ";
                 cin >> name;
-                for(int i = 0; i < spiderCollection.size(); i++){
+                for(size_t i = 0; i < spiderCollection.size(); i++){
                     if(spiderCollection[i]->getName() == name){
                         found = true;
                         cout << "Enter the food: ";
@@ -75,7 +81,7 @@ int main(){
             string name = "";
             cout << "Enter the name of the spider you want to alter: ";
             cin >> name;
-            for(int i = 0; i < spiderCollection.size(); i++){
+            for(size_t i = 0; i < spiderCollection.size(); i++){
                 if (spiderCollection[i]->getName() == name){
                     string newName, newSpecies, newColoration, newSex;
                     float newSize;
@@ -111,16 +117,14 @@ int main(){
             cout << "Collection saved!" << endl;
         }
         else if(choice == 'L' || choice == 'l'){
-            cout << "Loading your collection..." << endl;
-            ifstream inFile("spiderCollection.txt");
-            while(!inFile.eof()){
-                Spider* spider = Spider::loadFromFile(inFile);
-                if(spider != nullptr){
-                    spiderCollection.push_back(spider);
-                }
+            if(loaded){
+                cout << "Collection already loaded!" << endl;
+            }else{
+                cout << "Loading your collection..." << endl;
+                string fileName = "spiderCollection.txt";
+                spiderCollection = Spider::loadSpidersFromFile(fileName);  // Use the Spider class scope
+                loaded = true;
             }
-            inFile.close();
-            cout << "Collection loaded!" << endl;
         }
 
     }while(choice != 'x');

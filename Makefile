@@ -1,6 +1,9 @@
 # Compiler
 CC = g++  # Change this to 'gcc' if you're using C
 
+# Compiler flags
+CFLAGS = -Wall -g  # Enable all warnings and debugging symbols
+
 # Target executable name
 TARGET = my_program  # Change this to your desired executable name
 
@@ -18,11 +21,11 @@ all: $(TARGET)  # The default target to build
 
 # Link object files to create the executable
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^  # Compile and link
+	$(CC) $(CFLAGS) -o $@ $^  # Compile and link
 
 # Compile source files into object files
 %.o: %.cpp
-	$(CC) -c $<
+	$(CC) $(CFLAGS) -c $<  # Compile source files into object files
 
 # Clean up build files
 clean:
@@ -31,3 +34,6 @@ clean:
 # Run the program
 run: $(TARGET)
 	./$(TARGET)  # Execute the program
+
+# PHONY targets to avoid conflicts with files
+.PHONY: all clean run

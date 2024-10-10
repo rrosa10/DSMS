@@ -1,5 +1,12 @@
 // Spider.cpp
 #include "Spider.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <fstream>
+#include <sstream>
+
 
 // Default constructor
 Spider::Spider() {
@@ -16,6 +23,18 @@ Spider::Spider() {
 // Parameterized constructor
 Spider::Spider(string spiderName, string spiderSpecies, string spiderSex, string spiderColoration, float spiderSize, int spiderAge)
     : name(spiderName), species(spiderSpecies), sex(spiderSex), coloration(spiderColoration), size(spiderSize), age(spiderAge) {}
+
+// Copy constructor
+Spider::Spider(const Spider& spider) {
+    name = spider.name;
+    species = spider.species;
+    sex = spider.sex;
+    coloration = spider.coloration;
+    size = spider.size;
+    age = spider.age;
+    feedingHistory = spider.feedingHistory;
+    diet = spider.diet;
+}
 
 // Setters
 void Spider::setName(const string& spiderName) {
@@ -67,39 +86,34 @@ void Spider::saveToFile(ofstream& file) const {
     file << name << ", " << species << ", " << sex << "," << coloration << ", " << size << ", " << age << "\n";
 }
 
-// Load spider information from file
-Spider* Spider::loadFromFile(ifstream& inFile) {
-    string name, species, sex, coloration,feedingRecordStr;
-    float size;
-    int age;
-
-    if(!getline(inFile, name, ',')){
-        return nullptr;
+// read line from file which respresents a spider 
+// should there a return type? 
+std::vector<Spider*> Spider::loadSpidersFromFile(const std::string& filename) {
+    vector<Spider*> spiders; // Create a vector of Spider objects
+    ifstream file(filename); // Open the file
+    
+    if(!file.is_open()){ // Check if the file is open
+        cout << "Error opening file!" << endl;
+        return spiders; // Return an empty vector if the file cannot be opened
     }
 
-    getline(inFile, species, ',');
-    getline(inFile, sex, ',');
-    getline(inFile, coloration, ',');
-    inFile >> size;
-    inFile.ignore(1, ',');
-    inFile >> age;
-    inFile.ignore(1, '\n');
+    string line; // Create a string to store each line of the file
+    while(getline(file, line)){ // Read each line of the file
+        stringstream ss(line); // Creat a stringstream object to parse the line. 
+        string name, species, sex, coloration; // Create variables to store the data
+        float size;
+        int age;
+        getline(ss, name, ','); // Parse the line using the comma as a delimiter
+        getline(ss, species, ',');
+        getline(ss, sex, ',');
+        getline(ss, coloration, ',');
+        ss >> size;
+        ss.ignore();
+        ss >> age;
+        ss.ignore();
+        spiders.push_back(new Spider(name, species, sex, coloration, size, age));
 
-    getline(inFile, feedingRecordStr, '\n');
-
-    Spider* newSpider = new Spider(name, species, sex, coloration, size, age);
-
-    size_t pos = 0;
-    string token;
-    while((pos = feedingRecordStr.find(';')) != string::npos){
-        token = feedingRecordStr.substr(0, pos);
-        size_t colonPos = token.find(':');
-        if(colonPos != string::npos){
-            string date = token.substr(0, colonPos);
-            string prey = token.substr(colonPos + 1);
-            newSpider->addFeedingToRecord(date, prey);
-        }
-        feedingRecordStr.erase(0, pos + 1);
     }
-    return newSpider;
+    file.close(); // Close the file
+    return spiders; // Return the vector of Spider objects
 }

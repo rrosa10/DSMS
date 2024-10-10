@@ -26,6 +26,7 @@ public:
     // Constructors
     Spider();  // Default constructor
     Spider(string spiderName, string spiderSpecies, string spiderSex, string spiderColoration, float spiderSize, int spiderAge);
+    Spider(const Spider& spider);  // Copy constructor
 
     // Getters
     string getName() const { return name; }
@@ -47,7 +48,8 @@ public:
     void addFeedingToRecord(const string& date, const string& prey);
     void displaySpiderInfo() const;
     void saveToFile(ofstream& file) const;
-    static Spider* loadFromFile(ifstream& inFile);
+    // load spiders from file and return a vector of Spider objects read from the file 
+    static vector<Spider*> loadSpidersFromFile(const std::string& filename);
 };
 
 #endif // SPIDER_H
